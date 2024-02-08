@@ -15,24 +15,24 @@ $example_level = [
 ]
 
 module TextSprite
-  def sprite(name, char, color)
+  def sprite(name, options)
     define_method "draw_#{name}" do |x, y|
-      @draw.call(char, x, y)
+      @draw.call(options[:char], x, y, options[:color])
     end
 
     define_method name do
-      char
+      options[:char]
     end
   end
 end
 
 extend TextSprite
 
-sprite :player, "@", "blue"
-sprite :wall, "#", "gray"
-sprite :crate, 'o', "green"
-sprite :goal, '.', "yellow"
-sprite :empty, ' ', "black"
+sprite :player, char: "@",  color: "cyan"
+sprite :wall,   char: "#",  color: "gray"
+sprite :crate,  char: 'o',  color: "yellow"
+sprite :goal,   char: '.',  color: "white"
+sprite :empty,  char: ' ',  color: "black"
 
 class Map
   def initialize(level)
@@ -173,8 +173,9 @@ class Game < Gosu::Window
     @sokoban.draw_level
   end
 
-  def draw_char(char, x, y)
-    @font.draw_text(char, x * @char_size, y * @char_size, 0, 1.0, 1.0, Gosu::Color::WHITE)
+  def draw_char(char, x, y, color)
+    c = Module.const_get "Gosu::Color::#{color.upcase}"
+    @font.draw_text(char, x * @char_size, y * @char_size, 0, 1.0, 1.0, c)
   end
 end
 
